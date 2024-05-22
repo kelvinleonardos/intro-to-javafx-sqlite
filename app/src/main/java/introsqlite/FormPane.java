@@ -5,48 +5,65 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class FormPane {
 
-    Button add = new Button("Add");
-    Button update = new Button("Update");
-    Button delete = new Button("Delete");
-    VBox content = new VBox();
+    Button add, update, delete, submit, cancel;
+    VBox content;
 
     public VBox getFormPane() {
 
+        add = new Button("Add");
         add.setPrefSize(110, 40);
         add.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff; -fx-background-radius: 0");
         add.setOnAction(e -> {
             setActive(1);
             setForm(1);
+            setSubmit(1);
         });
+
+        update = new Button("Update");
         update.setPrefSize(110, 40);
         update.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff; -fx-background-radius: 0");
         update.setOnAction(e -> {
             setActive(2);
             setForm(2);
+            setSubmit(2);
         });
+
+        delete = new Button("Delete");
         delete.setPrefSize(110, 40);
         delete.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff; -fx-background-radius: 0");
         delete.setOnAction(e -> {
             setActive(3);
             setForm(3);
+            setSubmit(3);
         });
 
+        content = new VBox();
         content.setSpacing(10);
         content.setStyle("-fx-padding: 15px");
 
+        submit = new Button();
+        submit.setPrefSize(330, 25);
+        submit.setStyle("-fx-background-color: #0faf0f; -fx-text-fill: #ffffff;  -fx-background-radius: 10");
+        
+        cancel = new Button("Cancel");
+        cancel.setPrefSize(330, 25);
+        cancel.setStyle("-fx-background-color: #0faf0f; -fx-text-fill: #ffffff;  -fx-background-radius: 10");
+
         setActive(1);
         setForm(1);
+        setSubmit(1);
 
-        HBox hBox = new HBox(add, update, delete);
-        hBox.setAlignment(Pos.BOTTOM_CENTER);
+        HBox tab = new HBox(add, update, delete);
+        tab.setAlignment(Pos.BOTTOM_CENTER);
 
-        VBox vBox = new VBox(hBox, content);
+        VBox buttonGroup = new VBox(submit, cancel);
+        buttonGroup.setSpacing(10);
+
+        VBox vBox = new VBox(tab, content, buttonGroup);
         vBox.setStyle("-fx-padding: 20px");
         vBox.setPrefSize(370, 600);
 
@@ -145,6 +162,20 @@ public class FormPane {
 
                 content.getChildren().addAll(nim, nama, prodi);
 
+            }
+        }
+    }
+
+    void setSubmit(int type) {
+        switch (type) {
+            case 1 -> {
+                submit.setText("Add Data");
+            }
+            case 2 -> {
+                submit.setText("Update Data");
+            }
+            case 3 -> {
+                submit.setText("Delete Data");
             }
         }
     }
