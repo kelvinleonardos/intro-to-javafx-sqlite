@@ -1,5 +1,6 @@
 package introsqlite;
 
+import introsqlite.controller.MahasiswaController;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ public class FormPane {
 
     Button add, update, delete, submit, cancel;
     VBox content;
+    MahasiswaController mahasiswaController = new MahasiswaController();
 
     public VBox getFormPane() {
 
@@ -170,6 +172,12 @@ public class FormPane {
         switch (type) {
             case 1 -> {
                 submit.setText("Add Data");
+                submit.setOnAction(e -> {
+                    String nim = ((TextField) ((HBox) content.getChildren().get(0)).getChildren().get(1)).getText();
+                    String nama = ((TextField) ((HBox) content.getChildren().get(1)).getChildren().get(1)).getText();
+                    String prodi = ((TextField) ((HBox) content.getChildren().get(2)).getChildren().get(1)).getText();
+                    mahasiswaController.insert(nim, nama, prodi);
+                });
             }
             case 2 -> {
                 submit.setText("Update Data");
