@@ -13,8 +13,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        FormPane formPane = new FormPane();
         ListPane listPane = new ListPane();
+        FormPane formPane = new FormPane(listPane);
 
         HBox hBox = new HBox(formPane.getFormPane(), listPane.getListPane());
         hBox.setStyle("-fx-background-color: #0000ff");

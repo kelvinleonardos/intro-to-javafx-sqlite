@@ -1,18 +1,26 @@
 package introsqlite;
 
 import introsqlite.controller.MahasiswaController;
+import introsqlite.model.Mahasiswa;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class FormPane {
 
     Button add, update, delete, submit, cancel;
     VBox content;
     MahasiswaController mahasiswaController = new MahasiswaController();
+    ListPane listPane;
+
+    public FormPane(ListPane listPane) {
+        this.listPane = listPane;
+    }
 
     public VBox getFormPane() {
 
@@ -148,21 +156,7 @@ public class FormPane {
 
                 HBox nim = new HBox(lb_nim, tf_nim);
 
-                Label lb_nama = new Label("Nama");
-                lb_nama.setPrefSize(100, 20);
-                TextField tf_nama = new TextField();
-                tf_nama.setPrefSize(200, 20);
-
-                HBox nama = new HBox(lb_nama, tf_nama);
-
-                Label lb_prodi = new Label("Program Studi");
-                lb_prodi.setPrefSize(100, 20);
-                TextField tf_prodi = new TextField();
-                tf_prodi.setPrefSize(200, 20);
-
-                HBox prodi = new HBox(lb_prodi, tf_prodi);
-
-                content.getChildren().addAll(nim, nama, prodi);
+                content.getChildren().addAll(nim);
 
             }
         }
@@ -177,13 +171,47 @@ public class FormPane {
                     String nama = ((TextField) ((HBox) content.getChildren().get(1)).getChildren().get(1)).getText();
                     String prodi = ((TextField) ((HBox) content.getChildren().get(2)).getChildren().get(1)).getText();
                     mahasiswaController.insert(nim, nama, prodi);
+                    listPane.loadData();
                 });
             }
             case 2 -> {
                 submit.setText("Update Data");
+                submit.setOnAction(e -> {
+                    String nim = ((TextField) ((HBox) content.getChildren().get(0)).getChildren().get(1)).getText();
+                    String nama = ((TextField) ((HBox) content.getChildren().get(1)).getChildren().get(1)).getText();
+                    String prodi = ((TextField) ((HBox) content.getChildren().get(2)).getChildren().get(1)).getText();
+                    mahasiswaController.update(nim, nama, prodi);
+                    listPane.loadData();
+                });
             }
             case 3 -> {
                 submit.setText("Delete Data");
+                submit.setOnAction(e -> {
+                    String nim = ((TextField) ((HBox) content.getChildren().get(0)).getChildren().get(1)).getText();
+                    Stage stage = new Stage();
+                    Button yes = new Button("Yes");
+                    yes.setOnAction(e1 -> {
+                        mahasiswaController.delete(nim);
+                        listPane.loadData();
+                        stage.close();
+                    });
+                    Button no = new Button("No");
+                    no.setOnAction(e1 -> stage.close());
+                    VBox vBox = new VBox(new Label("Are you sure want to delete this data?"), yes, no);
+                    vBox.setSpacing(10);
+                    vBox.setStyle("-fx-padding: 20px");
+                    vBox.setPrefSize(200, 100);
+                    Scene scene = new Scene(vBox);
+                    stage.setScene(scene);
+                    stage.setResizable(false);
+                    stage.show();
+                
+                });
+                cancel.setOnAction(e -> {
+                    String nim = ((TextField) ((HBox) content.getChildren().get(0)).getChildren().get(1)).getText();
+                    Mahasiswa m = mahasiswaController.select(nim);
+                    System.err.println(m.getNama());
+                });
             }
         }
     }

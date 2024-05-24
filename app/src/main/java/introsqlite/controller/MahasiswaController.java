@@ -1,6 +1,7 @@
 package introsqlite.controller;
 
 import introsqlite.config.DatabaseConnection;
+import introsqlite.model.Mahasiswa;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -28,7 +29,6 @@ public class MahasiswaController {
 	}
 
 	public void insert(String nim, String nama, String prodi) {
-		createTable();
     	String sql = "INSERT INTO mahasiswa(nim, nama, prodi) VALUES(?, ?, ?)";
     	try (Connection conn = DatabaseConnection.connect();
          	PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -42,36 +42,59 @@ public class MahasiswaController {
     	}
 	}
 
-	public ObservableList<Contact> selectAll() {
-    	String sql = "SELECT id, name, email FROM contacts";
-    	ObservableList<Contact> contacts = FXCollections.observableArrayList();
+	public ObservableList<Mahasiswa> selectAll() {
+        String sql = "SELECT * FROM mahasiswa";
+        ObservableList<Mahasiswa> data = FXCollections.observableArrayList();
 
-    	try (Connection conn = DatabaseConnection.connect();
-         	Statement stmt = conn.createStatement();
-         	ResultSet rs = stmt.executeQuery(sql)) {
 
-        	while (rs.next()) {
-            	Contact contact = new Contact(
-                    	rs.getInt("id"),
-                    	rs.getString("name"),
-                    	rs.getString("email")
-            	);
-            	contacts.add(contact);
-        	}
-    	} catch (SQLException e) {
-        	System.out.println(e.getMessage());
-    	}
+        try (Connection conn = DatabaseConnection.connect();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
 
-    	return contacts;
+
+            while (rs.next()) {
+                Mahasiswa mahasiswa = new Mahasiswa(
+                        rs.getString("nim"),
+                        rs.getString("nama"),
+                        rs.getString("prodi")
+                );
+                data.add(mahasiswa);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        return data;
+    }
+
+	public Mahasiswa select(String nim) {
+		String sql = "SELECT nim, nama, prodi FROM mahasiswa WHERE nim = ?";
+		Mahasiswa mahasiswa = null;
+		try (Connection conn = DatabaseConnection.connect();
+		 	PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, nim);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				mahasiswa = new Mahasiswa(
+					rs.getString("nim"),
+					rs.getString("nama"),
+					rs.getString("prodi")
+				);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return mahasiswa;
 	}
 
-	public void update(int id, String name, String email) {
-    	String sql = "UPDATE contacts SET name = ?, email = ? WHERE id = ?";
+	public void update(String nim, String nama, String prodi) {
+    	String sql = "UPDATE mahasiswa SET nama = ?, prodi = ? WHERE nim = ?";
     	try (Connection conn = DatabaseConnection.connect();
          	PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        	pstmt.setString(1, name);
-        	pstmt.setString(2, email);
-        	pstmt.setInt(3, id);
+        	pstmt.setString(1, nama);
+        	pstmt.setString(2, prodi);
+        	pstmt.setString(3, nim);
         	pstmt.executeUpdate();
         	System.out.println("Data berhasil diperbarui.");
     	} catch (SQLException e) {
@@ -79,11 +102,11 @@ public class MahasiswaController {
     	}
 	}
 
-	public void delete(int id) {
-    	String sql = "DELETE FROM contacts WHERE id = ?";
+	public void delete(String nim) {
+    	String sql = "DELETE FROM mahasiswa WHERE nim = ?";
     	try (Connection conn = DatabaseConnection.connect();
          	PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        	pstmt.setInt(1, id);
+        	pstmt.setString(1, nim);
         	pstmt.executeUpdate();
         	System.out.println("Data berhasil dihapus.");
     	} catch (SQLException e) {
@@ -91,27 +114,4 @@ public class MahasiswaController {
     	}
 	}
 
-	public static class Contact {
-    	private int id;
-    	private String name;
-    	private String email;
-
-    	public Contact(int id, String name, String email) {
-        	this.id = id;
-        	this.name = name;
-        	this.email = email;
-    	}
-
-    	public int getId() {
-        	return id;
-    	}
-
-    	public String getName() {
-        	return name;
-    	}
-
-    	public String getEmail() {
-        	return email;
-    	}
-	}
 }
